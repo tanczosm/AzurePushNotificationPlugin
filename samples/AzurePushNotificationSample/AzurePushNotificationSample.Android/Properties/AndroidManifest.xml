@@ -12,4 +12,5 @@
 			</intent-filter>
 		</receiver>
 	</application>
+	<longPathAware>true</longPathAware>
 </manifest>
