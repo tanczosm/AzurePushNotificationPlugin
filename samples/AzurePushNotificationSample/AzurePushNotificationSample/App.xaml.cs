@@ -1,7 +1,9 @@
 ﻿using Plugin.AzurePushNotification;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 using Xamarin.Forms;
@@ -9,8 +11,8 @@ using Xamarin.Forms;
 namespace AzurePushNotificationSample
 {
 
-	public partial class App : Application
-	{
+    public partial class App : Application
+    {
 
         AzurePushNotificationSample.MainPage mPage;
         public App()
@@ -99,12 +101,24 @@ namespace AzurePushNotificationSample
                 System.Diagnostics.Debug.WriteLine("Dismissed");
             };
 
-            await CrossAzurePushNotification.Current.RegisterAsync(new string[] { "crossgeeks", "general" });
+            var tags = new string[] { "crossgeeks", "general" };
+            await CrossAzurePushNotification.Current.RegisterAsync(tags);
+
+            var token = CrossAzurePushNotification.Current.Token;
+
+            var client = new RestClient("http://192.168.1.2:2982");
+            var request = new RestRequest("api/notifications/install/{id}", Method.POST);
+
+            request.AddUrlSegment("id", token);
+
+            var response = await client.ExecuteTaskAsync(request);
+
+            var installationId = response.Content;
         }
 
         protected override void OnSleep()
         {
-         
+
         }
 
         protected override void OnResume()
